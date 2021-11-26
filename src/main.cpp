@@ -18,8 +18,8 @@ const char* mqttPassword = "";
 
 const char* temperatureMetricTopic = "temperature";
 const char* humidityMetricTopic = "humidity";
-const char* lightMetricTopic = "light";
-const char* soundMetricTopic = "sound";
+const char* lightMetricTopic = "lightIntensity";
+const char* soundMetricTopic = "soundIntensity";
 
 const int serialDelay = 200;
 const int startupDelay = 2000;
@@ -33,17 +33,17 @@ const int minValue = 0;
 
 const int temperatureIterations = 100, temperatureIterationDelay = 5;
 const int humidityIterations = 100, humidityIterationDelay = 5;
-const int photoResistorIterations = 100, photoResistorIterationDelay = 5;
-const int soundSensorIterations = 100, soundSensorIterationDelay = 5;
+const int lightIntensityIterations = 100, lightIntensityIterationDelay = 5;
+const int soundIntensityIterations = 100, soundIntensityIterationDelay = 5;
 
 const int temperatureDeltaTreshold = 1;
 const int humidityDeltaTreshold = 1;
-const int lightDeltaTreshold = 1;
-const int soundDeltaTreshold = 1;
+const int lightIntensityDeltaTreshold = 1;
+const int soundIntensityDeltaTreshold = 1;
 
 // MARK: Sensor values
-float temperatureLastUpdateValue = -1000, humidityLastUpdateValue = -1000, lightLastUpdateValue = -1000, soundLastUpdateValue = -1000;
-float temperature, humidity, light, sound;
+float temperatureLastUpdateValue = -1000, humidityLastUpdateValue = -1000, lightIntensityLastUpdateValue = -1000, soundIntensityLastUpdateValue = -1000;
+float temperature, humidity, lightIntensity, soundIntensity;
 
 // MARK: Variables
 DHT dht(DHTPIN, DHTTYPE);
@@ -177,29 +177,29 @@ void readHumidity() {
   humidity = sumHumidity / humidityIterations;
 }
 
-void readPhotoResistor() {
-  float sumLight = 0;
-  for (int i = 0; i < photoResistorIterations; i++) {
-    sumLight += normalizeAnalogValue(invertAnalogValue(analogRead(PHOTORESISTORPIN)));
-    delay(photoResistorIterationDelay);
+void readLightIntensity() {
+  float sumLightIntensity = 0;
+  for (int i = 0; i < lightIntensityIterations; i++) {
+    sumLightIntensity += normalizeAnalogValue(invertAnalogValue(analogRead(PHOTORESISTORPIN)));
+    delay(lightIntensityIterationDelay);
   }
-  light = sumLight / photoResistorIterations;
+  lightIntensity = sumLightIntensity / lightIntensityIterations;
 }
 
-void readSoundSensor() {
-  float sumSound = 0;
-  for (int i = 0; i < soundSensorIterations; i++) {
-    sumSound += normalizeAnalogValue(analogRead(SOUNDSENSORPIN));
-    delay(soundSensorIterationDelay);
+void readSoundIntensity() {
+  float sumSoundIntensity = 0;
+  for (int i = 0; i < soundIntensityIterations; i++) {
+    sumSoundIntensity += normalizeAnalogValue(analogRead(SOUNDSENSORPIN));
+    delay(soundIntensityIterationDelay);
   }
-  sound = sumSound / soundSensorIterations;
+  soundIntensity = sumSoundIntensity / soundIntensityIterations;
 }
 
 void readMetrics() {
   readTemperature();
   readHumidity();
-  readPhotoResistor();
-  readSoundSensor();
+  readLightIntensity();
+  readSoundIntensity();
 }
 
 // MARK: Sending metrics
@@ -236,23 +236,23 @@ void sendHumidityMetricsIfNeeded() {
 }
 
 void sendLightMetricsIfNeeded() {
-  float lightDelta = lightLastUpdateValue > light ? lightLastUpdateValue - light : light - lightLastUpdateValue;
-  if(lightDelta >= lightDeltaTreshold) {
+  float lightDelta = lightIntensityLastUpdateValue > lightIntensity ? lightIntensityLastUpdateValue - lightIntensity : lightIntensity - lightIntensityLastUpdateValue;
+  if(lightDelta >= lightIntensityDeltaTreshold) {
     String topic = String(lightMetricTopic) + "/" + WiFi.macAddress();
-    String message = String(light);
+    String message = String(lightIntensity);
     if(sendMetric(topic, message)) {
-      lightLastUpdateValue = light;
+      lightIntensityLastUpdateValue = lightIntensity;
     }
   }
 }
 
 void sendSoundMetricsIfNeeded() {
-  float soundDelta = soundLastUpdateValue > sound ? soundLastUpdateValue - sound : sound - soundLastUpdateValue;
-  if(soundDelta >= soundDeltaTreshold) {
+  float soundDelta = soundIntensityLastUpdateValue > soundIntensity ? soundIntensityLastUpdateValue - soundIntensity : soundIntensity - soundIntensityLastUpdateValue;
+  if(soundDelta >= soundIntensityDeltaTreshold) {
     String topic = String(soundMetricTopic) + "/" + WiFi.macAddress();
-    String message = String(sound);
+    String message = String(soundIntensity);
     if(sendMetric(topic, message)) {
-      soundLastUpdateValue = sound;
+      soundIntensityLastUpdateValue = soundIntensity;
     }
   }
 }
