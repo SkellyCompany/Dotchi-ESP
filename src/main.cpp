@@ -13,7 +13,7 @@ const char* networkName = "+slatt*!";
 const char* networkPassword = "2WBSqd6Q4@mb6wb8Mqs^";
 const char* mqttServer = "mqtt.flespi.io";
 const int mqttPort = 1883;
-const char* mqttUser = "GUHtG1woJmnhfbzRcCOTiNe47alwqJfUtMdXBxb9ImgNnEuq667eJc7EagYoP486";
+const char* mqttUser = "E5Re8Mn5WxlTbv6FLUIY2Vnk8DOnrYjTRZXQB9JlwU5vgZ0PJyDBjQKfimsxaAgS";
 const char* mqttPassword = "";
 
 const char* temperatureMetricTopic = "temperature";
