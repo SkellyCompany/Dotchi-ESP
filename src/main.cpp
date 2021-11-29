@@ -2,6 +2,7 @@
 #include <DHT.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 
 #define DHTPIN 0
 #define DHTTYPE DHT11
@@ -22,6 +23,9 @@ const char* temperatureMetricTopic = "temperature";
 const char* humidityMetricTopic = "humidity";
 const char* lightMetricTopic = "lightIntensity";
 const char* soundMetricTopic = "soundIntensity";
+
+const char* dotchiIdKey = "dotchi_id";
+const char* metricValueKey = "value";
 
 const int serialDelay = 200;
 const int startupDelay = 2000;
@@ -205,12 +209,18 @@ void readMetrics() {
 }
 
 // MARK: Sending metrics
-bool sendMetric(String topic, String message) {
-  if (mqttClient.publish( topic.c_str(), message.c_str())) {
-    Serial.println("✔️ Metric published. Topic: " + topic + ". Message: " + message);
+bool sendMetric(String topic, String value) {
+  StaticJsonDocument<256> doc;
+  doc[dotchiIdKey] = WiFi.macAddress();
+  doc[metricValueKey] = value;
+  char out[128];
+  serializeJson(doc, out);
+
+  if (mqttClient.publish( topic.c_str(), out)) {
+    Serial.println("✔️ Metric published. Topic: " + topic + ". Value: " + value);
     return true;
   } else {
-    Serial.println("ⓧ Metric publishing failed. Topic: " + topic + ". Message: " + message);
+    Serial.println("ⓧ Metric publishing failed. Topic: " + topic + ". Value: " + value);
     return false;
   }
 }
