@@ -9,8 +9,10 @@
 #define SOUNDSENSORPIN 39
 
 // MARK: Constants
-const char* networkName = "+slatt*!";
-const char* networkPassword = "2WBSqd6Q4@mb6wb8Mqs^";
+// const char* networkName = "+slatt*!";
+// const char* networkPassword = "2WBSqd6Q4@mb6wb8Mqs^";
+const char* networkName = "EASV-IoT";
+const char* networkPassword = "Stewardesse";
 const char* mqttServer = "mqtt.flespi.io";
 const int mqttPort = 1883;
 const char* mqttUser = "E5Re8Mn5WxlTbv6FLUIY2Vnk8DOnrYjTRZXQB9JlwU5vgZ0PJyDBjQKfimsxaAgS";
@@ -216,7 +218,7 @@ bool sendMetric(String topic, String message) {
 void sendTemperatureMetricsIfNeeded() {
   float temperatureDelta = temperatureLastUpdateValue > temperature ? temperatureLastUpdateValue - temperature : temperature - temperatureLastUpdateValue;
   if(temperatureDelta >= temperatureDeltaTreshold) {
-    String topic = String(temperatureMetricTopic) + "/" + WiFi.macAddress();
+    String topic = String(temperatureMetricTopic);
     String message = String(temperature);
     if(sendMetric(topic, message)) {
       temperatureLastUpdateValue = temperature;
@@ -227,7 +229,7 @@ void sendTemperatureMetricsIfNeeded() {
 void sendHumidityMetricsIfNeeded() {
   float humidityDelta = humidityLastUpdateValue > humidity ? humidityLastUpdateValue - humidity : humidity - humidityLastUpdateValue;
   if(humidityDelta >= humidityDeltaTreshold) {
-    String topic = String(humidityMetricTopic) + "/" + WiFi.macAddress();
+    String topic = String(humidityMetricTopic);
     String message = String(humidity);
     if(sendMetric(topic, message)) {
       humidityLastUpdateValue = humidity;
@@ -238,7 +240,7 @@ void sendHumidityMetricsIfNeeded() {
 void sendLightMetricsIfNeeded() {
   float lightDelta = lightIntensityLastUpdateValue > lightIntensity ? lightIntensityLastUpdateValue - lightIntensity : lightIntensity - lightIntensityLastUpdateValue;
   if(lightDelta >= lightIntensityDeltaTreshold) {
-    String topic = String(lightMetricTopic) + "/" + WiFi.macAddress();
+    String topic = String(lightMetricTopic);
     String message = String(lightIntensity);
     if(sendMetric(topic, message)) {
       lightIntensityLastUpdateValue = lightIntensity;
@@ -249,7 +251,7 @@ void sendLightMetricsIfNeeded() {
 void sendSoundMetricsIfNeeded() {
   float soundDelta = soundIntensityLastUpdateValue > soundIntensity ? soundIntensityLastUpdateValue - soundIntensity : soundIntensity - soundIntensityLastUpdateValue;
   if(soundDelta >= soundIntensityDeltaTreshold) {
-    String topic = String(soundMetricTopic) + "/" + WiFi.macAddress();
+    String topic = String(soundMetricTopic);
     String message = String(soundIntensity);
     if(sendMetric(topic, message)) {
       soundIntensityLastUpdateValue = soundIntensity;
